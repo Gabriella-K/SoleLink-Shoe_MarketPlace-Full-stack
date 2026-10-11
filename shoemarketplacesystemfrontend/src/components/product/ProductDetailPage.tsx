@@ -94,8 +94,8 @@ export const ProductDetailPage: React.FC = () => {
     setIsAdding(true);
     setActionError(null);
     try {
-      await addToCart(shoe.id, selectedSize, quantity);
-      setActivePage('checkout');
+      const added = await addToCart(shoe.id, selectedSize, quantity);
+      if (added) setActivePage('checkout');
     } catch (err: any) {
       setActionError(err.message);
     } finally {

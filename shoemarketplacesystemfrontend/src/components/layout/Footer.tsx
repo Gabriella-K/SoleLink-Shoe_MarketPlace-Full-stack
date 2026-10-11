@@ -2,7 +2,7 @@ import React from 'react';
 import { useMarketplace } from '../../context/MarketplaceContext';
 
 export const Footer: React.FC = () => {
-  const { setActivePage, switchDemoPersona, setVendorDashboardTab } = useMarketplace();
+  const { setActivePage, setVendorDashboardTab } = useMarketplace();
 
   return (
     <footer className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-stone-800">
@@ -92,7 +92,6 @@ export const Footer: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    switchDemoPersona('vendor');
                     setActivePage('vendor-dashboard');
                     setVendorDashboardTab('add-shoe');
                   }}
@@ -105,7 +104,6 @@ export const Footer: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    switchDemoPersona('vendor');
                     setActivePage('vendor-dashboard');
                     setVendorDashboardTab('inventory');
                   }}
@@ -118,7 +116,6 @@ export const Footer: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    switchDemoPersona('vendor');
                     setActivePage('vendor-dashboard');
                     setVendorDashboardTab('store-profile');
                   }}

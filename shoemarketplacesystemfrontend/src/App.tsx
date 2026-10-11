@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MarketplaceProvider, useMarketplace } from './context/MarketplaceContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -21,13 +21,12 @@ import { ContactVendorModal } from './components/common/ContactVendorModal';
 import { CheckCircle2 } from 'lucide-react';
 
 const MarketplaceApp: React.FC = () => {
-  const { activePage, toastMessage } = useMarketplace();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { activePage, toastMessage, authModal, openAuthModal, closeAuthModal } = useMarketplace();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF9] text-[#18181B]">
       {/* Top Navbar */}
-      <Navbar onOpenAuth={() => setAuthModalOpen(true)} />
+      <Navbar onOpenAuth={() => openAuthModal()} />
 
       {/* Main View Router */}
       <main className="flex-1">
@@ -62,7 +61,12 @@ const MarketplaceApp: React.FC = () => {
       <Footer />
 
       {/* Modals & Overlays */}
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <AuthModal
+        isOpen={authModal.open}
+        onClose={closeAuthModal}
+        initialRole={authModal.role}
+        initialType={authModal.type}
+      />
       <ContactVendorModal />
 
       {/* Discreet Toast Notification */}

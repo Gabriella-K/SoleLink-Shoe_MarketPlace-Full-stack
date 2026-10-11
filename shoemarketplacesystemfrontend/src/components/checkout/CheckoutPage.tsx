@@ -24,12 +24,12 @@ export const CheckoutPage: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
-  // Form states initialized with realistic buyer profile or defaults
-  const [customerName, setCustomerName] = useState(activeBuyer?.fullName || 'Jean-Luc Munyaneza');
-  const [email, setEmail] = useState(activeBuyer?.email || 'jeanluc.munyaneza@gmail.com');
-  const [phone, setPhone] = useState(activeBuyer?.phone || '+250 788 345 678');
+  // Form states start from the signed-in buyer's profile
+  const [customerName, setCustomerName] = useState(activeBuyer?.fullName || '');
+  const [email, setEmail] = useState(activeBuyer?.email || '');
+  const [phone, setPhone] = useState(activeBuyer?.phone || '');
   const [district, setDistrict] = useState(activeBuyer?.district || KIGALI_DISTRICTS[0]);
-  const [address, setAddress] = useState(activeBuyer?.address || 'KG 14 Ave, House 22, Kacyiru');
+  const [address, setAddress] = useState(activeBuyer?.address || '');
   const [notes, setNotes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo'>('cod');
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);

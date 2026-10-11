@@ -29,7 +29,7 @@ export const BuyerDashboard: React.FC = () => {
     currentUser,
     userRole,
     logout,
-    switchDemoPersona,
+    openAuthModal,
     setActivePage,
     buyerDashboardTab,
     setBuyerDashboardTab,
@@ -55,13 +55,20 @@ export const BuyerDashboard: React.FC = () => {
           <p className="text-xs text-stone-500 leading-relaxed">
             Please sign in to your buyer profile to track live orders, view saved footwear, and manage delivery addresses.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => switchDemoPersona('buyer')}
+              onClick={() => openAuthModal({ role: 'buyer', type: 'login' })}
               className="w-full py-2.5 bg-stone-900 text-white rounded-xl text-xs font-semibold hover:bg-stone-800"
             >
-              Sign In as Jean-Luc Munyaneza (Buyer Demo)
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => openAuthModal({ role: 'buyer', type: 'register' })}
+              className="w-full py-2.5 border border-stone-300 text-stone-800 rounded-xl text-xs font-semibold hover:bg-stone-50"
+            >
+              Create a Buyer Account
             </button>
           </div>
         </div>

@@ -1,6 +1,0 @@
-{
-  "name": "SoleLink — Modern Footwear Marketplace",
-  "description": "Discover and shop curated shoes from independent local vendors in Kigali and beyond. Browse sneakers, boots, formals, and casuals in one seamless platform.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

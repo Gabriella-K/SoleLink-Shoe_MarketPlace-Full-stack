@@ -13,7 +13,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
     activeBuyer,
     activeVendor,
     vendors,
-    switchDemoPersona,
     logout,
     activePage,
     setActivePage,
@@ -228,44 +227,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
                       <span>Vendor Dashboard</span>
                     </button>
                   )}
-
-                  <div className="my-1.5 border-t border-stone-100"></div>
-                  <div className="px-3 py-1 text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                    Switch Persona (Demo)
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      switchDemoPersona('buyer');
-                      setRoleDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
-                      userRole === 'buyer' ? 'bg-stone-100 text-stone-900 font-semibold' : 'text-stone-600 hover:bg-stone-50'
-                    }`}
-                  >
-                    <span>Buyer (Jean-Luc)</span>
-                    <span className="text-[10px] text-stone-400 font-mono">Gasabo</span>
-                  </button>
-
-                  {vendors.slice(0, 2).map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => {
-                        switchDemoPersona('vendor', v.id);
-                        setRoleDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 rounded-lg transition-colors flex items-center justify-between ${
-                        userRole === 'vendor' && activeVendor?.id === v.id
-                          ? 'bg-stone-100 text-stone-900 font-semibold'
-                          : 'text-stone-600 hover:bg-stone-50'
-                      }`}
-                    >
-                      <span className="truncate">{v.name}</span>
-                      <span className="text-[10px] text-amber-600">★ {v.rating}</span>
-                    </button>
-                  ))}
 
                   <div className="pt-1.5 mt-1.5 border-t border-stone-100">
                     <button

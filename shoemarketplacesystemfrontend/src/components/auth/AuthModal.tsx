@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, User, Store, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useMarketplace } from '../../context/MarketplaceContext';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialRole?: 'buyer' | 'vendor';
+  initialType?: 'login' | 'register';
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialRole, initialType }) => {
   const { login, registerBuyer, registerVendor, setActivePage, setBuyerDashboardTab, setVendorDashboardTab } =
     useMarketplace();
 
@@ -27,6 +29,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successInfo, setSuccessInfo] = useState<string | null>(null);
+
+  // Each time the pop-up opens, start on the tab the caller asked for
+  useEffect(() => {
+    if (isOpen) {
+      setRoleMode(initialRole ?? 'buyer');
+      setAuthType(initialType ?? 'login');
+      setErrorMessage(null);
+      setSuccessInfo(null);
+    }
+  }, [isOpen, initialRole, initialType]);
 
   if (!isOpen) return null;
 
@@ -96,8 +108,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     try {
       if (authType === 'login') {
-        await login(email, password);
-        if (roleMode === 'buyer') {
+        const res = await login(email, password);
+        if (res.role === 'buyer') {
           setActivePage('buyer-dashboard');
           setBuyerDashboardTab('overview');
         } else {
@@ -135,34 +147,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleQuickDemoBuyer = async () => {
-    setIsSubmitting(true);
-    try {
-      await login('jeanluc.munyaneza@gmail.com', 'buyer1234');
-      setActivePage('buyer-dashboard');
-      setBuyerDashboardTab('overview');
-      onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleQuickDemoVendor = async () => {
-    setIsSubmitting(true);
-    try {
-      await login('hello@urbansole.rw', 'vendor1234');
-      setActivePage('vendor-dashboard');
-      setVendorDashboardTab('overview');
-      onClose();
-    } catch (err: any) {
-      setErrorMessage(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -253,31 +237,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <span>{successInfo}</span>
           </div>
         )}
-
-        {/* Preset Demo Access Buttons */}
-        <div className="mb-5 p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-xs">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1.5">
-            Quick Test Credentials (Pre-seeded database accounts)
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={handleQuickDemoBuyer}
-              disabled={isSubmitting}
-              className="py-1.5 px-2 bg-white border border-stone-300 rounded-lg text-stone-800 font-medium hover:border-stone-900 text-left truncate text-[11px]"
-            >
-              Sign in as <strong>Buyer</strong> (Jean-Luc)
-            </button>
-            <button
-              type="button"
-              onClick={handleQuickDemoVendor}
-              disabled={isSubmitting}
-              className="py-1.5 px-2 bg-white border border-stone-300 rounded-lg text-stone-800 font-medium hover:border-stone-900 text-left truncate text-[11px]"
-            >
-              Sign in as <strong>Vendor</strong> (Urban Sole)
-            </button>
-          </div>
-        </div>
 
         {/* Real Authentication Form */}
         <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">

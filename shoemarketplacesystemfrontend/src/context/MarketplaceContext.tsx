@@ -28,7 +28,9 @@ interface MarketplaceContextType {
   registerBuyer: (payload: any) => Promise<AuthResponse>;
   registerVendor: (payload: any) => Promise<AuthResponse>;
   logout: () => Promise<void>;
-  switchDemoPersona: (persona: 'guest' | 'buyer' | 'vendor', specificVendorId?: string) => Promise<void>;
+  authModal: { open: boolean; role: 'buyer' | 'vendor'; type: 'login' | 'register' };
+  openAuthModal: (opts?: { role?: 'buyer' | 'vendor'; type?: 'login' | 'register' }) => void;
+  closeAuthModal: () => void;
 
   // Navigation & Page State
   activePage: string;
@@ -63,7 +65,7 @@ interface MarketplaceContextType {
   applySmartSearch: (query: string) => void;
 
   // Cart Operations
-  addToCart: (shoeId: string, size: number, quantity?: number) => Promise<void>;
+  addToCart: (shoeId: string, size: number, quantity?: number) => Promise<boolean>;
   updateCartQuantity: (cartItemId: string, delta: number) => Promise<void>;
   removeFromCart: (cartItemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -255,15 +257,25 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     await Promise.all([loadShoes(), loadVendors(), loadCart(), loadOrders()]);
   };
 
+  // Sign in / register pop-up (can be opened from anywhere: navbar, dashboards, add-to-bag)
+  const [authModal, setAuthModal] = useState<{
+    open: boolean;
+    role: 'buyer' | 'vendor';
+    type: 'login' | 'register';
+  }>({ open: false, role: 'buyer', type: 'login' });
+
+  const openAuthModal = (opts?: { role?: 'buyer' | 'vendor'; type?: 'login' | 'register' }) =>
+    setAuthModal({ open: true, role: opts?.role ?? 'buyer', type: opts?.type ?? 'login' });
+
+  const closeAuthModal = () => setAuthModal((prev) => ({ ...prev, open: false }));
+
   // Auth actions
   const login = async (email: string, pass: string): Promise<AuthResponse> => {
     const res = await authService.login({ email, password: pass });
     setCurrentUser(res.user);
     setUserRole(res.role);
     setIsAuthenticated(true);
-    if (res.vendor) {
-      setActiveVendor(res.vendor);
-    }
+    setActiveVendor(res.vendor ?? null);
     showToast(`Signed in as ${res.user.fullName}`);
     await refreshData();
     return res;
@@ -274,6 +286,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setCurrentUser(res.user);
     setUserRole('buyer');
     setIsAuthenticated(true);
+    setActiveVendor(null);
     showToast(`Welcome to SoleLink, ${res.user.fullName}!`);
     await refreshData();
     return res;
@@ -304,46 +317,24 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     showToast('Signed out of SoleLink');
   };
 
-  // One-click demo persona switch that hits real backend credentials
-  const switchDemoPersona = async (
-    persona: 'guest' | 'buyer' | 'vendor',
-    specificVendorId?: string
-  ) => {
-    if (persona === 'guest') {
-      await logout();
-      return;
-    }
-
-    if (persona === 'buyer') {
-      await login('jeanluc.munyaneza@gmail.com', 'buyer1234');
-      setActivePage('buyer-dashboard');
-      setBuyerDashboardTab('overview');
-      return;
-    }
-
-    if (persona === 'vendor') {
-      // Pick vendor credentials based on selection
-      if (specificVendorId === 'vendor-2') {
-        await login('orders@kigalifootwear.rw', 'vendor1234');
-      } else {
-        await login('hello@urbansole.rw', 'vendor1234');
-      }
-      setActivePage('vendor-dashboard');
-      setVendorDashboardTab('overview');
-    }
-  };
-
   // Cart operations
-  const addToCart = async (shoeId: string, size: number, quantity = 1) => {
+  const addToCart = async (shoeId: string, size: number, quantity = 1): Promise<boolean> => {
+    // Only signed-in buyers can shop. Guests are asked to sign in or register.
     if (!isAuthenticated || userRole !== 'buyer') {
-      // Auto-authenticate as buyer for smooth purchasing or prompt
-      await login('jeanluc.munyaneza@gmail.com', 'buyer1234');
+      if (userRole === 'vendor') {
+        showToast('Vendor accounts cannot place orders. Please use a buyer account.');
+      } else {
+        openAuthModal({ role: 'buyer', type: 'login' });
+        showToast('Please sign in or create a buyer account to shop');
+      }
+      return false;
     }
 
     try {
       const res = await cartService.addToCart(shoeId, size, quantity);
       setCart(res.cart);
       showToast(res.message || 'Added shoe to shopping bag');
+      return true;
     } catch (err: any) {
       showToast(err.message || 'Failed to add item to bag');
       throw err;
@@ -389,8 +380,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
     address: string;
     notes?: string;
   }): Promise<Order> => {
-    if (!isAuthenticated) {
-      await login('jeanluc.munyaneza@gmail.com', 'buyer1234');
+    if (!isAuthenticated || userRole !== 'buyer') {
+      openAuthModal({ role: 'buyer', type: 'login' });
+      throw new Error('Please sign in with a buyer account to place your order.');
     }
 
     const res = await orderService.placeOrder(payload);
@@ -500,7 +492,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           email: currentUser.email,
           phone: currentUser.phone,
           district: currentUser.district || 'Gasabo',
-          address: currentUser.address || 'Kigali, Rwanda',
+          address: currentUser.address || '',
           avatar: currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
         }
       : null;
@@ -517,7 +509,9 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         registerBuyer,
         registerVendor,
         logout,
-        switchDemoPersona,
+        authModal,
+        openAuthModal,
+        closeAuthModal,
         activePage,
         setActivePage,
         selectedShoeId,

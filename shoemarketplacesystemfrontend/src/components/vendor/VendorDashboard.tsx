@@ -35,7 +35,7 @@ export const VendorDashboard: React.FC = () => {
     vendors,
     currentUser,
     userRole,
-    switchDemoPersona,
+    openAuthModal,
     shoes,
     orders,
     vendorDashboardTab,
@@ -60,22 +60,22 @@ export const VendorDashboard: React.FC = () => {
           <Store className="w-10 h-10 text-amber-600 mx-auto" />
           <h2 className="font-display text-xl font-bold text-stone-900">Vendor Portal Access</h2>
           <p className="text-xs text-stone-500 leading-relaxed">
-            You are currently browsing as a buyer or guest. Please sign in to a verified vendor account to access store management.
+            Sign in to your vendor account, or register your shop, to list shoes and manage orders.
           </p>
           <div className="pt-2 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => switchDemoPersona('vendor', 'vendor-1')}
+              onClick={() => openAuthModal({ role: 'vendor', type: 'login' })}
               className="py-2.5 bg-stone-900 text-white rounded-xl text-xs font-semibold hover:bg-stone-800"
             >
-              Sign In as Urban Sole (Kigali Heights)
+              Sign In as Vendor
             </button>
             <button
               type="button"
-              onClick={() => switchDemoPersona('vendor', 'vendor-2')}
+              onClick={() => openAuthModal({ role: 'vendor', type: 'register' })}
               className="py-2.5 border border-stone-300 text-stone-800 rounded-xl text-xs font-semibold hover:bg-stone-50"
             >
-              Sign In as Kigali Footwear (Nyarugenge)
+              Register Your Shop
             </button>
           </div>
         </div>
