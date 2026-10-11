@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Manrope', 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #FAFAF9;
+    color: #18181B;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+  }
+
+  /* Typography Hierarchy specification */
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  /* Hero headings: Manrope 700 */
+  .hero-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  /* Section headings: Manrope 600-700 */
+  .section-heading {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /* Product names: Manrope 600 */
+  .product-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /* Navigation & button text: Inter 500-600 */
+  nav, button, .nav-action {
+    font-family: var(--font-sans);
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F5F5F4;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D6D3D1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #A8A29E;
+  }
+}
+
+.font-display {
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Tabular figures for prices, stats, orders */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
